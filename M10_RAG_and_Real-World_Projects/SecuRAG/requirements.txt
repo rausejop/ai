@@ -1,0 +1,10 @@
+langchain
+langchain-community
+ollama
+faiss-cpu
+loguru
+pypdf
+pydantic
+rich
+asyncio
+opentelemetry-api
