@@ -1,8 +1,8 @@
-\# Temperature Setting in LLMs
+# Temperature Setting in LLMs
 
 
 
-This document explains the mathematical impact of the \*\*Temperature\*\* ($T$) parameter on the output of Large Language Models (LLMs).
+This document explains the mathematical impact of the **Temperature** ($T$) parameter on the output of Large Language Models (LLMs).
 
 
 
@@ -10,11 +10,11 @@ This document explains the mathematical impact of the \*\*Temperature\*\* ($T$) 
 
 
 
-\## 1. The Transformation Process
+## 1. The Transformation Process
 
 
 
-Before a model predicts a word, it generates raw numerical values called \*\*logits\*\*. To convert these values into probabilities that sum up to 1 (or 100%), the \*\*Softmax\*\* function is used.
+Before a model predicts a word, it generates raw numerical values called **logits**. To convert these values into probabilities that sum up to 1 (or 100%), the **Softmax** function is used.
 
 
 
@@ -28,9 +28,9 @@ $$P(y\_i) = \\frac{e^{z\_i / T}}{\\sum\_{j} e^{z\_j / T}}$$
 
 Where:
 
-\* $z\_i$ represents the \*\*logit\*\* of a specific token.
+* $z\_i$ represents the \*\*logit\*\* of a specific token.
 
-\* $T$ is the \*\*Temperature\*\* parameter.
+* $T$ is the \*\*Temperature\*\* parameter.
 
 
 
@@ -38,7 +38,7 @@ Where:
 
 
 
-\## 2. The Impact of $T$ on Probability
+## 2. The Impact of $T$ on Probability
 
 
 
@@ -46,23 +46,23 @@ Temperature acts as a regulator of the model's "confidence" or "sharpness":
 
 
 
-\### 🌡️ Low Temperature (e.g., $T = 0.1$)
+### 🌡️ Low Temperature (e.g., $T = 0.1$)
 
-\* \*\*Mechanism:\*\* Dividing logits by a small number \*\*drastically increases\*\* the gap between them before they are exponentiated.
+* **Mechanism:** Dividing logits by a small number **drastically increases** the gap between them before they are exponentiated.
 
-\* \*\*Result:\*\* Probability mass concentrates heavily on the highest-scoring token.
+* **Result:** Probability mass concentrates heavily on the highest-scoring token.
 
-\* \*\*Effect:\*\* The model becomes \*\*deterministic\*\* and precise. Best for technical, factual, or coding tasks.
+* **Effect:** The model becomes **deterministic** and precise. Best for technical, factual, or coding tasks.
 
 
 
-\### 🌡️ High Temperature (e.g., $T = 0.8$)
+### 🌡️ High Temperature (e.g., $T = 0.8$)
 
-\* \*\*Mechanism:\*\* Dividing logits by a larger number \*\*flattens the differences\*\* between them.
+* **Mechanism:** Dividing logits by a larger number **flattens the differences** between them.
 
-\* \*\*Result:\*\* Tokens that previously had low scores now have a significant probability of being selected.
+* **Result:** Tokens that previously had low scores now have a significant probability of being selected.
 
-\* \*\*Effect:\*\* The model becomes \*\*"creative"\*\* and diverse. Best for storytelling, brainstorming, or roleplay.
+* **Effect:** The model becomes **"creative"** and diverse. Best for storytelling, brainstorming, or roleplay.
 
 
 
@@ -70,7 +70,7 @@ Temperature acts as a regulator of the model's "confidence" or "sharpness":
 
 
 
-\## 3. Behavioral Summary
+## 3. Behavioral Summary
 
 
 
@@ -82,7 +82,8 @@ Temperature acts as a regulator of the model's "confidence" or "sharpness":
 
 | :--- | :--- | :--- | :--- |
 
-| \*\*0.1 - 0.3\*\* | Conservative | Focused, repetitive, logical. | Coding, Mathematics. |
+| **0.1 - 0.3** | Conservative | Focused, repetitive, logical. | Coding, Mathematics. |
 
-| \*\*0.7 - 1.0\*\* | Balanced | Fluid, natural, coherent. |
+| **0.7 - 1.0** | Balanced | Fluid, natural, coherent. |
+
 
