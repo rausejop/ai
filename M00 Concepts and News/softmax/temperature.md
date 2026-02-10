@@ -28,9 +28,9 @@ $$P(y\_i) = \\frac{e^{z\_i / T}}{\\sum\_{j} e^{z\_j / T}}$$
 
 Where:
 
-* $z\_i$ represents the \*\*logit\*\* of a specific token.
+* $z\_i$ represents the **logit** of a specific token.
 
-* $T$ is the \*\*Temperature\*\* parameter.
+* $T$ is the **Temperature** parameter.
 
 
 
@@ -85,5 +85,6 @@ Temperature acts as a regulator of the model's "confidence" or "sharpness":
 | **0.1 - 0.3** | Conservative | Focused, repetitive, logical. | Coding, Mathematics. |
 
 | **0.7 - 1.0** | Balanced | Fluid, natural, coherent. |
+
 
 
