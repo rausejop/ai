@@ -9,7 +9,7 @@ $$\text{Probability} = \text{Softmax}\left(\frac{\text{Logit}}{T}\right)$$
 In a more granular form, for each specific token $i$:
 $$P(y_i) = \frac{e^{z_i / T}}{\sum_{j} e^{z_j / T}}$$
 
-To introduce variability, Temperature is applied to the denominator of the exponent in the function:
+To introduce variability, in a more granular form, for each specific token $i$, Temperature is applied to the denominator of the exponent in the function:
 $$P(y\_i) = \\frac{e^{z\_i / T}}{\\sum\_{j} e^{z\_j / T}}$$
 
 Where:
@@ -44,6 +44,7 @@ Temperature acts as a regulator of the model's "confidence" or "sharpness":
 | **1.2 - 1.5** | Creative | Unexpected, risky, erratic. | Poetry, Fiction. |
 
 > **Warning:** Extreme temperatures ($T > 2.0$) usually break grammatical coherence, turning the output into a stream of disconnected words.
+
 
 
 
