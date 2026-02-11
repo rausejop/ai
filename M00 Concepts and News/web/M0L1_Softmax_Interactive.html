@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M0L1: The Softmax Function - Interactive Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- KaTeX for formula rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+        }
+
+        .math-block {
+            background: #ffffff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 2px solid #e5e7eb;
+            overflow-x: auto;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="glass sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-gray-800 tracking-tight">M0L1: Softmax Function</span>
+                </div>
+                <div class="hidden md:flex space-x-6 items-center text-sm font-medium">
+                    <a href="#history" class="text-gray-600 hover:text-purple-600 transition">History</a>
+                    <a href="#formula" class="text-gray-600 hover:text-purple-600 transition">Formula</a>
+                    <a href="#interactive" class="text-gray-600 hover:text-purple-600 transition">Interactive</a>
+                    <a href="#applications" class="text-gray-600 hover:text-purple-600 transition">Applications</a>
+                    <a href="../M0_INDEX.md" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Back to Index</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+        <!-- Hero Section -->
+        <section class="glass rounded-3xl shadow-2xl p-12 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                The Softmax Function
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                From Boltzmann's statistical mechanics (1868) to modern neural networks (1989), 
+                discover how the softmax function transforms raw scores into probability distributions.
+            </p>
+        </section>
+
+        <!-- Historical Timeline -->
+        <section id="history" class="glass rounded-3xl shadow-xl p-10">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 border-l-4 border-purple-500 pl-4">
+                Historical Evolution
+            </h2>
+            
+            <div class="space-y-6">
+                <div class="flex gap-6 items-start">
+                    <div class="flex-shrink-0 w-24 text-right">
+                        <span class="text-2xl font-bold text-purple-600">1868</span>
+                    </div>
+                    <div class="flex-1 bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-lg mb-2">Ludwig Boltzmann</h3>
+                        <p class="text-gray-600">Introduced the Boltzmann distribution in statistical mechanics:</p>
+                        <div class="math-block mt-3">
+                            $$P(i) = \frac{e^{-E_i / kT}}{\sum_{j} e^{-E_j / kT}}$$
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-6 items-start">
+                    <div class="flex-shrink-0 w-24 text-right">
+                        <span class="text-2xl font-bold text-purple-600">1959</span>
+                    </div>
+                    <div class="flex-1 bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-lg mb-2">R. Duncan Luce</h3>
+                        <p class="text-gray-600">Luce's Choice Axiom - probabilistic choice behavior</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-6 items-start">
+                    <div class="flex-shrink-0 w-24 text-right">
+                        <span class="text-2xl font-bold text-purple-600">1989</span>
+                    </div>
+                    <div class="flex-1 bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-lg mb-2">John S. Bridle</h3>
+                        <p class="text-gray-600">Formally introduced "Softmax" to neural networks for pattern classification</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-6 items-start">
+                    <div class="flex-shrink-0 w-24 text-right">
+                        <span class="text-2xl font-bold text-purple-600">2017</span>
+                    </div>
+                    <div class="flex-1 bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-lg mb-2">Vaswani et al.</h3>
+                        <p class="text-gray-600">"Attention Is All You Need" - Softmax in Transformer attention mechanism</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mathematical Formula -->
+        <section id="formula" class="glass rounded-3xl shadow-xl p-10">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 border-l-4 border-blue-500 pl-4">
+                Mathematical Formulation
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-gray-800">Standard Softmax</h3>
+                    <div class="math-block">
+                        $$\text{Softmax}(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{n} e^{z_j}}$$
+                    </div>
+                    
+                    <div class="bg-blue-50 p-6 rounded-xl">
+                        <h4 class="font-bold text-blue-900 mb-3">Properties</h4>
+                        <ul class="space-y-2 text-sm text-blue-800">
+                            <li>✓ Range: (0, 1)</li>
+                            <li>✓ Sum equals 1</li>
+                            <li>✓ Monotonic</li>
+                            <li>✓ Differentiable</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-gray-800">Numerically Stable Version</h3>
+                    <div class="math-block">
+                        $$\text{Softmax}(z_i) = \frac{e^{z_i - \max(\mathbf{z})}}{\sum_{j=1}^{n} e^{z_j - \max(\mathbf{z})}}$$
+                    </div>
+                    
+                    <div class="bg-green-50 p-6 rounded-xl">
+                        <h4 class="font-bold text-green-900 mb-3">Why Subtract Max?</h4>
+                        <p class="text-sm text-green-800">
+                            Prevents numerical overflow when $e^{z_i}$ becomes too large. 
+                            The subtraction doesn't change the result but keeps values in a safe range.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Softmax Calculator -->
+        <section id="interactive" class="glass rounded-3xl shadow-xl p-10">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 border-l-4 border-green-500 pl-4">
+                Interactive Softmax Calculator
+            </h2>
+
+            <div class="grid lg:grid-cols-2 gap-10">
+                <!-- Controls -->
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-lg mb-4">Input Logits</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-sm font-medium text-gray-700">Token 1: "cat"</label>
+                                <input type="range" id="logit1" min="-5" max="5" step="0.1" value="2.0" 
+                                       class="w-full accent-purple-600">
+                                <span id="logit1-val" class="text-sm font-mono text-gray-600">2.0</span>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-700">Token 2: "dog"</label>
+                                <input type="range" id="logit2" min="-5" max="5" step="0.1" value="1.0" 
+                                       class="w-full accent-purple-600">
+                                <span id="logit2-val" class="text-sm font-mono text-gray-600">1.0</span>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-700">Token 3: "bird"</label>
+                                <input type="range" id="logit3" min="-5" max="5" step="0.1" value="0.1" 
+                                       class="w-full accent-purple-600">
+                                <span id="logit3-val" class="text-sm font-mono text-gray-600">0.1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl">
+                        <h3 class="font-bold text-lg mb-4">Probabilities</h3>
+                        <div class="space-y-3 font-mono text-sm">
+                            <div class="flex justify-between items-center">
+                                <span>P("cat"):</span>
+                                <span id="prob1" class="text-lg font-bold text-purple-600">0.000</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>P("dog"):</span>
+                                <span id="prob2" class="text-lg font-bold text-blue-600">0.000</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>P("bird"):</span>
+                                <span id="prob3" class="text-lg font-bold text-green-600">0.000</span>
+                            </div>
+                            <div class="border-t-2 border-gray-300 pt-2 flex justify-between items-center">
+                                <span>Sum:</span>
+                                <span id="sum" class="text-lg font-bold">1.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualization -->
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-center">Probability Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="softmaxChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Applications in LLMs -->
+        <section id="applications" class="glass rounded-3xl shadow-xl p-10">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 border-l-4 border-orange-500 pl-4">
+                Applications in Large Language Models
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h3 class="text-xl font-bold text-orange-600 mb-4">1. Attention Mechanism</h3>
+                    <p class="text-gray-700 mb-4">
+                        Softmax converts attention scores into attention weights:
+                    </p>
+                    <div class="math-block">
+                        $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h3 class="text-xl font-bold text-orange-600 mb-4">2. Token Prediction</h3>
+                    <p class="text-gray-700 mb-4">
+                        Final layer converts logits to token probabilities:
+                    </p>
+                    <div class="math-block">
+                        $$P(\text{token}_i | \text{context}) = \frac{e^{z_i}}{\sum_{j=1}^{|V|} e^{z_j}}$$
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 bg-gradient-to-r from-orange-50 to-red-50 p-8 rounded-xl">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Computational Complexity</h3>
+                <div class="grid md:grid-cols-3 gap-6 text-sm">
+                    <div>
+                        <p class="font-bold text-orange-700">Time Complexity</p>
+                        <p class="text-gray-700 mt-2">O(n) for n tokens</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-orange-700">Space Complexity</p>
+                        <p class="text-gray-700 mt-2">O(n) for storage</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-orange-700">Optimization</p>
+                        <p class="text-gray-700 mt-2">GPU vectorization, fused kernels</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Takeaways -->
+        <section class="bg-gradient-to-r from-purple-900 to-blue-900 text-white rounded-3xl p-10">
+            <h2 class="text-3xl font-bold mb-6">Key Takeaways</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-3">
+                    <p>✓ Softmax evolved from Boltzmann (1868) to Bridle (1989)</p>
+                    <p>✓ Converts logits to valid probability distributions</p>
+                    <p>✓ Always subtract max for numerical stability</p>
+                </div>
+                <div class="space-y-3">
+                    <p>✓ Critical for attention and token prediction in LLMs</p>
+                    <p>✓ Differentiable - enables gradient-based learning</p>
+                    <p>✓ O(n) complexity - efficient for large vocabularies</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="glass mt-16 py-8 text-center text-sm text-gray-600">
+        <p>Module 0, Lesson 1: The Softmax Function | Interactive Learning Experience</p>
+        <p class="mt-2">
+            <a href="../M0L1_Softmax_Function.md" class="text-purple-600 hover:underline">View Full Lesson (Markdown)</a>
+        </p>
+    </footer>
+
+    <script>
+        // Initialize KaTeX
+        function initMath() {
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        // Softmax calculation
+        function softmax(logits) {
+            const max = Math.max(...logits);
+            const exps = logits.map(z => Math.exp(z - max));
+            const sum = exps.reduce((a, b) => a + b, 0);
+            return exps.map(e => e / sum);
+        }
+
+        // Chart initialization
+        let softmaxChart;
+        function initChart() {
+            const ctx = document.getElementById('softmaxChart').getContext('2d');
+            softmaxChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['cat', 'dog', 'bird'],
+                    datasets: [{
+                        label: 'Probability',
+                        data: [0.33, 0.33, 0.33],
+                        backgroundColor: [
+                            'rgba(147, 51, 234, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(34, 197, 94, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(147, 51, 234)',
+                            'rgb(59, 130, 246)',
+                            'rgb(34, 197, 94)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 1,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value * 100).toFixed(0) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update calculations
+        function updateSoftmax() {
+            const l1 = parseFloat(document.getElementById('logit1').value);
+            const l2 = parseFloat(document.getElementById('logit2').value);
+            const l3 = parseFloat(document.getElementById('logit3').value);
+
+            document.getElementById('logit1-val').textContent = l1.toFixed(1);
+            document.getElementById('logit2-val').textContent = l2.toFixed(1);
+            document.getElementById('logit3-val').textContent = l3.toFixed(1);
+
+            const probs = softmax([l1, l2, l3]);
+            
+            document.getElementById('prob1').textContent = probs[0].toFixed(3);
+            document.getElementById('prob2').textContent = probs[1].toFixed(3);
+            document.getElementById('prob3').textContent = probs[2].toFixed(3);
+            document.getElementById('sum').textContent = probs.reduce((a, b) => a + b, 0).toFixed(3);
+
+            if (softmaxChart) {
+                softmaxChart.data.datasets[0].data = probs;
+                softmaxChart.update();
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initMath();
+            initChart();
+            
+            ['logit1', 'logit2', 'logit3'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateSoftmax);
+            });
+
+            updateSoftmax();
+        });
+    </script>
+</body>
+</html>

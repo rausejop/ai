@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M0L2: Temperature Scaling - Interactive Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+        }
+
+        .math-block {
+            background: #ffffff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 2px solid #e5e7eb;
+            overflow-x: auto;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <nav class="glass sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-gray-800">M0L2: Temperature Scaling</span>
+                </div>
+                <div class="hidden md:flex space-x-6 items-center text-sm font-medium">
+                    <a href="#theory" class="text-gray-600 hover:text-pink-600 transition">Theory</a>
+                    <a href="#interactive" class="text-gray-600 hover:text-pink-600 transition">Interactive</a>
+                    <a href="#gemini" class="text-gray-600 hover:text-pink-600 transition">Gemini Defaults</a>
+                    <a href="../M0_INDEX.md"
+                        class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition">Back to
+                        Index</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+        <section class="glass rounded-3xl shadow-2xl p-12 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">Temperature Scaling</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Control the randomness and creativity of LLM outputs by scaling the probability distribution
+            </p>
+        </section>
+
+        <section id="theory" class="glass rounded-3xl shadow-xl p-10">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 border-l-4 border-pink-500 pl-4">
+                Mathematical Foundation
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-4">Temperature-Scaled Softmax</h3>
+                    <div class="math-block">
+                        $$P(y_i) = \frac{e^{z_i / T}}{\sum_{j=1}^{n} e^{z_j / T}}$$
+                    </div>
+                    <p class="text-gray-600 mt-4">Where $T$ is the temperature parameter ($T > 0$)</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-pink-50 to-red-50 p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-4">Effect of Temperature</h3>
+                    <ul class="space-y-3 text-sm">
+                        <li><strong>T → 0:</strong> Deterministic (argmax)</li>
+                        <li><strong>T = 1:</strong> Standard softmax</li>
+                        <li><strong>T > 1:</strong> Flatter distribution (more random)</li>
+                        <li><strong>T → ∞:</strong> Uniform distribution</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="interactive" class="glass rounded-3xl shadow-xl p-10">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 border-l-4 border-blue-500 pl-4">
+                Interactive Temperature Explorer
+            </h2>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <label class="block text-sm font-bold mb-4">Temperature (T)</label>
+                        <input type="range" id="temp" min="0.1" max="3.0" step="0.1" value="1.0"
+                            class="w-full accent-pink-600">
+                        <div class="text-center mt-2">
+                            <span id="temp-val" class="text-3xl font-bold text-pink-600">1.0</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-xl">
+                        <h4 class="font-bold mb-3">Probabilities</h4>
+                        <div class="space-y-2 font-mono text-sm">
+                            <div class="flex justify-between">
+                                <span>"the":</span>
+                                <span id="p1" class="font-bold">0.000</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>"a":</span>
+                                <span id="p2" class="font-bold">0.000</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>"is":</span>
+                                <span id="p3" class="font-bold">0.000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h4 class="font-bold mb-3">Entropy</h4>
+                        <div class="text-center">
+                            <span id="entropy" class="text-2xl font-bold text-blue-600">0.000</span>
+                            <p class="text-xs text-gray-500 mt-1">nats</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-center">Distribution Shape</h3>
+                    <div class="chart-container">
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gemini" class="glass rounded-3xl shadow-xl p-10">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 border-l-4 border-green-500 pl-4">
+                Gemini Flash 2.0 Defaults
+            </h2>
+
+            <div class="bg-white p-8 rounded-xl shadow-sm mb-8">
+                <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-2">Default Temperature</p>
+                        <p class="text-4xl font-bold text-green-600">1.0</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 mb-2">Range</p>
+                        <p class="text-4xl font-bold text-blue-600">[0.0, 2.0]</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 mb-2">Recommended</p>
+                        <p class="text-4xl font-bold text-purple-600">0.7-1.0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-xl">
+                    <h3 class="font-bold text-lg mb-4">Use Case Recommendations</h3>
+                    <table class="w-full text-sm">
+                        <tr class="border-b">
+                            <td class="py-2 font-medium">Code Generation</td>
+                            <td class="py-2 text-right font-mono">0.2-0.3</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-2 font-medium">Factual Q&A</td>
+                            <td class="py-2 text-right font-mono">0.3-0.5</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-2 font-medium">General Chat</td>
+                            <td class="py-2 text-right font-mono">0.8-1.0</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 font-medium">Creative Writing</td>
+                            <td class="py-2 text-right font-mono">1.0-1.5</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="bg-gradient-to-br from-orange-50 to-red-50 p-6 rounded-xl">
+                    <h3 class="font-bold text-lg mb-4">Behavior by Range</h3>
+                    <div class="space-y-3 text-sm">
+                        <div>
+                            <p class="font-bold text-blue-700">T = 0.1-0.3: Deterministic</p>
+                            <p class="text-gray-600">Focused, repetitive, logical</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-green-700">T = 0.7-1.0: Balanced</p>
+                            <p class="text-gray-600">Natural, varied, coherent</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-orange-700">T = 1.2-1.5: Creative</p>
+                            <p class="text-gray-600">Diverse, unexpected, exploratory</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-gradient-to-r from-pink-900 to-red-900 text-white rounded-3xl p-10">
+            <h2 class="text-3xl font-bold mb-6">Key Takeaways</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-3">
+                    <p>✓ Temperature scales logits before softmax</p>
+                    <p>✓ Low T → peaked distribution (deterministic)</p>
+                    <p>✓ High T → flat distribution (random)</p>
+                </div>
+                <div class="space-y-3">
+                    <p>✓ Gemini default: T=1.0, range [0.0, 2.0]</p>
+                    <p>✓ Entropy increases monotonically with T</p>
+                    <p>✓ Choose T based on task requirements</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="glass mt-16 py-8 text-center text-sm text-gray-600">
+        <p>Module 0, Lesson 2: Temperature Scaling | Interactive Learning Experience</p>
+        <p class="mt-2">
+            <a href="../M0L2_Temperature_Scaling.md" class="text-pink-600 hover:underline">View Full Lesson
+                (Markdown)</a>
+        </p>
+    </footer>
+
+    <script>
+        function initMath() {
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }],
+                    throwOnError: false
+                });
+            }
+        }
+
+        function softmax(logits, temp) {
+            const scaled = logits.map(z => z / temp);
+            const max = Math.max(...scaled);
+            const exps = scaled.map(z => Math.exp(z - max));
+            const sum = exps.reduce((a, b) => a + b, 0);
+            return exps.map(e => e / sum);
+        }
+
+        function entropy(probs) {
+            return -probs.reduce((sum, p) => sum + (p > 0 ? p * Math.log(p) : 0), 0);
+        }
+
+        let tempChart;
+        function initChart() {
+            const ctx = document.getElementById('tempChart').getContext('2d');
+            tempChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['the', 'a', 'is'],
+                    datasets: [{
+                        label: 'Probability',
+                        data: [0.33, 0.33, 0.33],
+                        backgroundColor: ['rgba(236, 72, 153, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(168, 85, 247, 0.8)'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { min: 0, max: 1 } }
+                }
+            });
+        }
+
+        function updateTemp() {
+            const T = parseFloat(document.getElementById('temp').value);
+            document.getElementById('temp-val').textContent = T.toFixed(1);
+
+            const logits = [3.0, 2.0, 1.0]; // Fixed logits
+            const probs = softmax(logits, T);
+
+            document.getElementById('p1').textContent = probs[0].toFixed(3);
+            document.getElementById('p2').textContent = probs[1].toFixed(3);
+            document.getElementById('p3').textContent = probs[2].toFixed(3);
+            document.getElementById('entropy').textContent = entropy(probs).toFixed(3);
+
+            if (tempChart) {
+                tempChart.data.datasets[0].data = probs;
+                tempChart.update();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initMath();
+            initChart();
+            document.getElementById('temp').addEventListener('input', updateTemp);
+            updateTemp();
+        });
+    </script>
+</body>
+
+</html>

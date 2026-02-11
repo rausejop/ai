@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M0L3-M0L5: Interactive Demos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body class="antialiased p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="glass rounded-3xl shadow-2xl p-12 text-center mb-8">
+            <h1 class="text-5xl font-bold text-gray-900 mb-4">Interactive Demos: M0L3, M0L4, M0L5</h1>
+            <p class="text-xl text-gray-600">Top-K Sampling | Top-P (Nucleus) Sampling | Dot Product Attention</p>
+        </div>
+
+        <!-- M0L3: Top-K Sampling -->
+        <section class="glass rounded-3xl p-10 mb-8">
+            <h2 class="text-3xl font-bold mb-6 border-l-4 border-blue-500 pl-4">M0L3: Top-K Sampling</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <label class="block font-bold mb-2">K Value (Gemini default: 64)</label>
+                    <input type="range" id="k-val" min="1" max="10" value="3" class="w-full accent-blue-600">
+                    <p class="text-center mt-2 text-2xl font-bold text-blue-600">k = <span id="k-display">3</span></p>
+                    <div class="mt-4 bg-blue-50 p-4 rounded-xl">
+                        <p class="text-sm"><strong>Top-K:</strong> Sample from k most probable tokens</p>
+                        <p class="text-sm mt-2">Fixed k doesn't adapt to distribution shape</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl">
+                    <div class="chart-container">
+                        <canvas id="topkChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- M0L4: Top-P (Nucleus) Sampling -->
+        <section class="glass rounded-3xl p-10 mb-8">
+            <h2 class="text-3xl font-bold mb-6 border-l-4 border-green-500 pl-4">M0L4: Top-P (Nucleus) Sampling</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <label class="block font-bold mb-2">P Value (Gemini default: 0.95)</label>
+                    <input type="range" id="p-val" min="0.5" max="1.0" step="0.05" value="0.95"
+                        class="w-full accent-green-600">
+                    <p class="text-center mt-2 text-2xl font-bold text-green-600">p = <span id="p-display">0.95</span>
+                    </p>
+                    <div class="mt-4 bg-green-50 p-4 rounded-xl">
+                        <p class="text-sm"><strong>Nucleus:</strong> Sample from smallest set covering p probability</p>
+                        <p class="text-sm mt-2">Adaptive - nucleus size changes with distribution</p>
+                        <p class="text-sm mt-2 font-bold">Nucleus size: <span id="nucleus-size">0</span> tokens</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl">
+                    <div class="chart-container">
+                        <canvas id="toppChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- M0L5: Dot Product & Attention -->
+        <section class="glass rounded-3xl p-10 mb-8">
+            <h2 class="text-3xl font-bold mb-6 border-l-4 border-purple-500 pl-4">M0L5: Dot Product & Attention</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-bold mb-2">Vector A</label>
+                        <input type="range" id="ax" min="0" max="10" step="0.5" value="5"
+                            class="w-full accent-purple-600">
+                        <input type="range" id="ay" min="0" max="10" step="0.5" value="3"
+                            class="w-full accent-purple-600">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-2">Vector B</label>
+                        <input type="range" id="bx" min="0" max="10" step="0.5" value="3"
+                            class="w-full accent-purple-600">
+                        <input type="range" id="by" min="0" max="10" step="0.5" value="5"
+                            class="w-full accent-purple-600">
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl font-mono text-sm">
+                        <p>Dot Product: <span id="dot-result" class="font-bold">0.00</span></p>
+                        <p>Cosine Similarity: <span id="cos-result" class="font-bold">0.00</span></p>
+                        <p class="mt-2 text-xs">$$\mathbf{a} \cdot \mathbf{b} = \|\mathbf{a}\| \|\mathbf{b}\|
+                            \cos(\theta)$$</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl">
+                    <div class="chart-container">
+                        <canvas id="dotChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="glass rounded-xl p-8 text-center">
+            <p class="text-gray-600 mb-4">For full interactive experiences, see individual lesson files:</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="../M0L3_Top_K_Sampling.md"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">M0L3 Full Lesson</a>
+                <a href="../M0L4_Top_P_Nucleus_Sampling.md"
+                    class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">M0L4 Full Lesson</a>
+                <a href="../M0L5_Dot_Product_Attention.md"
+                    class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">M0L5 Full Lesson</a>
+                <a href="../M0L6_Interactive_Resources.md"
+                    class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900">M0L6 Navigation Hub</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize KaTeX
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(document.body, {
+                delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }],
+                throwOnError: false
+            });
+        }
+
+        // Top-K Chart
+        const topkCtx = document.getElementById('topkChart').getContext('2d');
+        const topkChart = new Chart(topkCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Token1', 'Token2', 'Token3', 'Token4', 'Token5'],
+                datasets: [{
+                    label: 'Probability',
+                    data: [0.4, 0.3, 0.15, 0.1, 0.05],
+                    backgroundColor: (ctx) => ctx.dataIndex < 3 ? 'rgba(59, 130, 246, 0.8)' : 'rgba(156, 163, 175, 0.3)'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        document.getElementById('k-val').addEventListener('input', (e) => {
+            const k = parseInt(e.target.value);
+            document.getElementById('k-display').textContent = k;
+            topkChart.data.datasets[0].backgroundColor = (ctx) => ctx.dataIndex < k ? 'rgba(59, 130, 246, 0.8)' : 'rgba(156, 163, 175, 0.3)';
+            topkChart.update();
+        });
+
+        // Top-P Chart
+        const toppCtx = document.getElementById('toppChart').getContext('2d');
+        const toppChart = new Chart(toppCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Token1', 'Token2', 'Token3', 'Token4', 'Token5'],
+                datasets: [{
+                    label: 'Probability',
+                    data: [0.4, 0.3, 0.15, 0.1, 0.05],
+                    backgroundColor: 'rgba(34, 197, 94, 0.8)'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        document.getElementById('p-val').addEventListener('input', (e) => {
+            const p = parseFloat(e.target.value);
+            document.getElementById('p-display').textContent = p.toFixed(2);
+            const probs = [0.4, 0.3, 0.15, 0.1, 0.05];
+            let cumsum = 0, nucleusSize = 0;
+            for (let i = 0; i < probs.length; i++) {
+                cumsum += probs[i];
+                if (cumsum <= p) nucleusSize++;
+                else if (nucleusSize === 0) nucleusSize = 1;
+            }
+            document.getElementById('nucleus-size').textContent = nucleusSize;
+            toppChart.data.datasets[0].backgroundColor = (ctx) => ctx.dataIndex < nucleusSize ? 'rgba(34, 197, 94, 0.8)' : 'rgba(156, 163, 175, 0.3)';
+            toppChart.update();
+        });
+
+        // Dot Product Chart
+        const dotCtx = document.getElementById('dotChart').getContext('2d');
+        const dotChart = new Chart(dotCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    { label: 'Vector A', data: [{ x: 0, y: 0 }, { x: 5, y: 3 }], showLine: true, borderColor: 'rgb(147, 51, 234)', borderWidth: 3, pointRadius: 0 },
+                    { label: 'Vector B', data: [{ x: 0, y: 0 }, { x: 3, y: 5 }], showLine: true, borderColor: 'rgb(59, 130, 246)', borderWidth: 3, pointRadius: 0 }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { min: 0, max: 10 }, y: { min: 0, max: 10 } } }
+        });
+
+        function updateDot() {
+            const ax = parseFloat(document.getElementById('ax').value);
+            const ay = parseFloat(document.getElementById('ay').value);
+            const bx = parseFloat(document.getElementById('bx').value);
+            const by = parseFloat(document.getElementById('by').value);
+
+            const dot = ax * bx + ay * by;
+            const magA = Math.sqrt(ax * ax + ay * ay);
+            const magB = Math.sqrt(bx * bx + by * by);
+            const cos = magA && magB ? dot / (magA * magB) : 0;
+
+            document.getElementById('dot-result').textContent = dot.toFixed(2);
+            document.getElementById('cos-result').textContent = cos.toFixed(3);
+
+            dotChart.data.datasets[0].data = [{ x: 0, y: 0 }, { x: ax, y: ay }];
+            dotChart.data.datasets[1].data = [{ x: 0, y: 0 }, { x: bx, y: by }];
+            dotChart.update();
+        }
+
+        ['ax', 'ay', 'bx', 'by'].forEach(id => document.getElementById(id).addEventListener('input', updateDot));
+        updateDot();
+    </script>
+</body>
+
+</html>
